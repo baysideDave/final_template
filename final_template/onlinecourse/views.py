@@ -1,5 +1,7 @@
+from django.http.response import Http404, HttpResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.template import context
 # <HINT> Import any new Models here
 from .models import Course, Enrollment, Question, Choice, Submission
 from django.contrib.auth.models import User
@@ -113,12 +115,15 @@ def enroll(request, course_id):
 def submit(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
-    submission = Submission(enrollment = Enrollment.objects.get(user=1, course=course))
-    submission.save()
-    choices = extract_answers(request)
-    submission.choices.add(*choices)
-    logger.info(submission)
-    return redirect('onlinecourse:show_exam_result', course_id=course_id, submission_id=submission.id)
+    Enrollment = Enrollment.objects.get(user=user, course=course)
+    submission = Submission.objects.create(enrollment=enrollment)
+    
+    selected_choices = extract_answers(request)
+    for choice_id in selected_choices:
+        choice = Choice.objects.get(pk=choice_id)
+        submission.choices.add(choice)
+
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:show_exam_result', args=(course_id,submission.id)))
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
 def extract_answers(request):
