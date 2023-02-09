@@ -144,21 +144,46 @@ def extract_answers(request):
         # Calculate the total score
 def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course, pk=course_id)
-    submission = Submission(id=submission_id)
-    context = {}
-    context['course'] = course
-    choices = submission.choices.all()
-    cids = list(choices.values_list('pk', flat=True))
-    context['cids'] = cids
-    logger.info(cids)
-    # now get the score
-    grade = 0
-    questions = Question.objects.all()
-    for question in questions:
-        selected_ids = submission.choices.filter(question_id=question.id).values_list('pk', flat=True)
-        if question.is_get_score(selected_ids):
-            grade += question.grade
+    submission = get_object_or_404(Submission, pk=submission_id)
 
-    context['grade'] = grade
+    # submission = Submission.objects.get(pk=submission_id)
+    questions = course.question_set.all()
+
+    right_choice_answers = []
+    for question in questions:
+        for choice in question.choice_set.all():
+            if choice.is_correct:
+                right_choice_answers.append(choice.id)
     
-    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
+    grade_score = 0
+    grade = get_grades(course_id) * 10
+    selected_choice_ids = []
+
+    for choice in submission.choices.all():
+        selected_choice_ids.append(choice.id)
+        if(choice.is_correct):
+            grade_score += 1
+
+    percentage_score = ((grade_score * 10) / grade) * 100
+    grade_score = int(percentage_score)
+
+  
+    context = {
+        'course': course,
+        'selected_ids': selected_choice_ids,
+        'grade': grade,
+        'score': grade_score,
+        'right_answers': right_choice_answers
+    }
+
+    return render(request,'onlinecourse/exam_result_bootstrap.html', context)
+    
+
+def get_grades(course_id):
+    course = Course.objects.get(pk=course_id)
+    questions = course.question_set.all()
+    total_grades = 0
+    for question in questions:
+        total_grades += question.grade
+    
+    return total_grades
