@@ -103,8 +103,8 @@ class Enrollment(models.Model):
     # Has question content
     # Other fields and methods you would like to design
 class Question(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    question_text = models.CharField(max_length=255)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE,default="")
+    question_text = models.CharField(null=True, max_length=200)
     grade = models.IntegerField()
 
     # <HINT> A sample model method to calculate if learner get the score of the question
@@ -127,7 +127,7 @@ class Question(models.Model):
     # Indicate if this choice of the question is a correct one or not
     # Other fields and methods you would like to design
 class Choice(models.Model):
-    question = models.ForeignKey(Question,on_delete=models.CASCADE)
+    question = models.ForeignKey(Question,on_delete=models.CASCADE, default="")
     choice_text = models.CharField(max_length=255)
     is_correct = models.BooleanField(default=False)
 
