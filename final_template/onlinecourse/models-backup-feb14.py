@@ -1,5 +1,4 @@
 import sys
-from django.db.models.base import ModelStateFieldsCacheDescriptor
 from django.utils.timezone import now
 try:
     from django.db import models
@@ -18,7 +17,7 @@ class Instructor(models.Model):
         on_delete=models.CASCADE,
     )
     full_time = models.BooleanField(default=True)
-    total_learners = models.IntegerField()
+    total_learners = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username
@@ -103,21 +102,22 @@ class Enrollment(models.Model):
     # Has question content
     # Other fields and methods you would like to design
 class Question(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    question_text = models.CharField(max_length=255)
-    grade = models.IntegerField()
+    # Foreign key to lesson
+    course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
+    question_text = models.TextField()
+    grade = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.question_text
 
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
-       all_answers = self.choice_set.filter(is_correct=True).count()
-       selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
-       if all_answers == selected_correct:
-           return True
-       else:
-           return False
-    
-    def __str__(self):
-        return self.question_text
+        all_answers = self.choice_set.filter(is_correct=True).count()
+        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        if all_answers == selected_correct:
+            return True
+        else:
+            return False
 
 
 #  <HINT> Create a Choice Model with:
@@ -127,8 +127,8 @@ class Question(models.Model):
     # Indicate if this choice of the question is a correct one or not
     # Other fields and methods you would like to design
 class Choice(models.Model):
-    question = models.ForeignKey(Question,on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=255)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.TextField()
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
@@ -140,6 +140,6 @@ class Choice(models.Model):
 # One submission could have multiple choices
 # One choice could belong to multiple submissions
 class Submission(models.Model):
-   enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-   choices = models.ManyToManyField(Choice)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    choices = models.ManyToManyField(Choice)
 #    Other fields and methods you would like to design
