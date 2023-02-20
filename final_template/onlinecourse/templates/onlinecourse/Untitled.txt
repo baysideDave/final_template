@@ -60,7 +60,7 @@
                     {% for choice in question.choice_set.all %}
                         {{choice}}
                         {% if choice.id not in selected_choices %}
-                            {% if choice.is_correct %}                        
+                            {% if choice.choiche_is_correct %}                        
                                 <div class="card-text"> 
                                     <p class="text-warning"> Not selected: {{ choice.content }} </p>
                                 </div>
