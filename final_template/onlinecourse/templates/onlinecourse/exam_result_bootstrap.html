@@ -57,32 +57,32 @@
                 <div class="card-header"><h5>{{ question.question_text}}</h5></div>
                 {% csrf_token %}
                 <div class="card-body">
-                    {% for choice in question.choice_set.all %}
-                        {{choice}}
-                        {% if choice.id not in selected_choices %}
-                            {% if choice.is_correct %}                        
-                                <div class="card-text"> 
-                                    <p class="text-warning"> Not selected: {{ choice.content }} </p>
-                                </div>
-                            {%else%}
-                                <div class="card-text"> 
-                                    <p>{{ choice.content }} </p>
-                                </div>
-                            {%endif%}
-    
-                        {% else %}
-                            {% if choice.choiche_is_correct %}                        
-                                <div class="card-text"> 
-                                    <p class="font-weight-bold text-success"> Correct answer: {{ choice.content }} </p>
-                                </div>
-                            {%else%}
+                {% for choice in question.choice_set.all %}
+
+                    {% if choice.id not in selected_choice %}
+                        {% if choice.is_correct %}                        
                             <div class="card-text"> 
-                                <p class="font-weight-bold text-danger"> Wrong answer: {{ choice.content }} </p>
+                                <p class="text-warning"> Not selected: {{ choice.choice_text }} </p>
                             </div>
-                            {%endif%}
+                        {%else%}
+                            <div class="card-text"> 
+                                <p>{{ choice.choice_text }} </p>
+                            </div>
                         {%endif%}
-    
-                    {% endfor %}
+
+                    {% else %}
+                        {% if choice.is_correct %}                        
+                            <div class="card-text"> 
+                                <p class="font-weight-bold text-success"> Correct answer: {{ choice.choice_text }} </p>
+                            </div>
+                        {%else%}
+                        <div class="card-text"> 
+                            <p class="font-weight-bold text-danger"> Wrong answer: {{ choice.choice_text }} </p>
+                        </div>
+                        {%endif%}
+                    {%endif%}
+
+                {% endfor %}
                 </div>
             {% endfor %}
         </div>
