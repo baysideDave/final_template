@@ -38,13 +38,13 @@
 <div class="container-fluid">
     {%if grade > 80%}
     <div class="alert alert-success">
-       <!--HINT Display passed info -->
+       <!-- Display passed info -->
        <strong> Congradulations, {{ user }}!</strong> You have passed the exam and completed the course with score
        {{ grade }} / 100
     </div>
     {% else %}
         <div class="alert alert-danger">
-            <!--HINT Display failed info -->
+            <!-- Display failed info -->
             <strong>Failed</strong> Sorry, {{ user }}! You have failed exam with score {{ grade }} / 100
         </div>
         <a class="btn btn-link text-danger" href="{% url 'onlinecourse:course_details' course.id %}">Re-test</a>
@@ -52,29 +52,40 @@
         <div class="card-columns-vertical mt-1">
         <h5 class="">Exam results</h5>
             <!--HINT Display exam results-->
+            <!-- outer loop on questions -->
             {% for question in course.question_set.all %}
-                {{question.question_text}}
-                <h4>in the inner loop</h4>
+            <div class="card mt-1">
+                <div class="card-header"> 
+                    <h4>{{question.question_text}}</h4>
+                </div>
+                <div class="form-group">
+                <!-- starting the inner loop on choices made  -->
                 {% for choice in question.choice_set.all %}
-                        {% if choice in submitted_choices and choice.is_correct %}
+                <div class="form-check">
+                    {% if choice in submitted_choices and choice.is_correct %}
                         <label class="form-check-label text-success">
-                            Correct answer: {{ choice.choice_text }}
+                        Correct answer: {{ choice.choice_text }}
                         </label>
                     {% elif choice in submitted_choices and not choice.is_correct %}
                         <label class="form-check-label text-danger">
-                            Incorrect answer: {{ choice.choice_text }}
+                        Incorrect answer: {{ choice.choice_text }}
                         </label>
                     {% elif choice not in submitted_choices and choice.is_correct %}
                         <label class="form-check-label text-warning">
-                            Not selected: {{ choice.choice_text }}
+                        Not selected: {{ choice.choice_text }}
                         </label>
                     {% else %}
                         <label class="form-check-label text-succes">
-                            {{ choice.choice_text }}
+                        {{ choice.choice_text }}
                         </label>
                     {% endif %}
+                </div> <!-- form check-->
                 {% endfor %}
+                <!-- end inner loop -->
+            </div> <!-- form-check-->
             {% endfor %}
+            </div> <!-- form-group-->
+            <!-- end outer loop on questions-->
         </div>
 </div>
 </body>
