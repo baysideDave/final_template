@@ -16,5 +16,5 @@ for question in questions:
     choices = Choice.objects.filter(question_id=question.id)
     for choice in choices:
         if choice.is_correct:
-            print("green " + choice.choice)
+            print("looping on choices " + choice.choice)
         print(choice.choice)
